@@ -1,79 +1,115 @@
 <script setup>
 import axios from 'axios';
-import { reactive, ref } from 'vue';
+import { reactive, ref, computed, onMounted } from 'vue';
 
-defineProps({
+var props = defineProps({
   id: {
     type: String,
     required: true,
   },
 });
+//todo:測試用,上線後刪除
+// const testdata = {
+//   StatusCode: 200,
+//   Message: null,
+//   Payload: {
+//     ID: 16,
+//     ModelID: '94100002',
+//     Name: 'P180108A-MA曲柄飾蓋 (長) 模具',
+//     Hold: 2,
+//     Tonnage: 1,
+//     CustName: null,
+//     VendorName: null,
+//     CustomerCode: null,
+//     VendorCode: null,
+//     PDF: null,
+//     CanUseCount: 0,
+//     SafetyStock: 1,
+//     MaintainWorkHour: 3,
+//     CycleTime: 5.8,
+//     IsEnabled: true,
+//     Remark: null,
+//     ProdId: 'A-080-06',
+//     ProductName: null,
+//     MoldStockID: 'G1X1Y1',
+//     MoldStockEnabled: true,
+//     MoldMaxLimit: 100,
+//     MoldInjection: 0,
+//     MoldStatus: 1,
+//     MoldStatusName: null,
+//     MoldMaxLifeCycle: 500,
+//     MoldTotalInjection: 100,
+//     MoldBlock: 1,
+//     MoldPicList: [],
+//     MachineList: [],
+//     CreateTime: '0001-01-01T00:00:00',
+//     CreateUser: null,
+//     UpdateTime: '2022-04-22T15:39:25',
+//     UpdateUser: null,
+//   },
+//   Pagination: {
+//     Total: null,
+//     PageSize: null,
+//     CurrentPage: null,
+//   },
+//   ResponseTime: '2022-11-07T16:19:53.7387511+08:00',
+// };
 
+//正式用
+const datas = reactive({
+  'MoldStockID': 0,
+  'MoldMaxLimit': 0,
+  'MoldInjection': 0,
+  'MoldMaxLifeCycle': 0,
+  'MoldTotalInjection': 0,
+  'ModelID': 2,
+});
 const url = 'http://192.168.1.101/api/Commold/GetByID';
 
-// axios
-//   .post(url, {
-//     Id: id,
-//   })
-//   .then((response) => console.log(response))
-//   .catch((error) => console.log(error));
+//正式用
+function getMoldData() {
+  axios
+    .post(url, {
+      Id: props.id,
+    })
+    .then((response) => {
+      console.log(response);
+      var res = response.Payload;
+      datas.MoldStockID = parseInt(props.id.replace(/mold/g, ''), 10);
+      datas.MoldMaxLimit = res.MoldMaxLimit;
+      datas.MoldInjection = res.MoldInjection;
+      datas.MoldMaxLifeCycle = res.MoldMaxLifeCycle;
+      datas.MoldTotalInjection = res.MoldTotalInjection;
+      datas.ModelID = res.ModelID;
+    })
+    .catch((error) => console.log(error));
+}
 
-const data = {
-  StatusCode: 200,
-  Message: null,
-  Payload: {
-    ID: 16,
-    ModelID: '94100002',
-    Name: 'P180108A-MA曲柄飾蓋 (長) 模具',
-    Hold: 2,
-    Tonnage: 1,
-    CustName: null,
-    VendorName: null,
-    CustomerCode: null,
-    VendorCode: null,
-    PDF: null,
-    CanUseCount: 0,
-    SafetyStock: 1,
-    MaintainWorkHour: 3,
-    CycleTime: 5.8,
-    IsEnabled: true,
-    Remark: null,
-    ProdId: 'A-080-06',
-    ProductName: null,
-    MoldStockID: 'G1X1Y1',
-    MoldStockEnabled: true,
-    MoldMaxLimit: 100,
-    MoldInjection: 0,
-    MoldStatus: 1,
-    MoldStatusName: null,
-    MoldMaxLifeCycle: 500,
-    MoldTotalInjection: 100,
-    MoldBlock: 1,
-    MoldPicList: [],
-    MachineList: [],
-    CreateTime: '0001-01-01T00:00:00',
-    CreateUser: null,
-    UpdateTime: '2022-04-22T15:39:25',
-    UpdateUser: null,
-  },
-  Pagination: {
-    Total: null,
-    PageSize: null,
-    CurrentPage: null,
-  },
-  ResponseTime: '2022-11-07T16:19:53.7387511+08:00',
-};
+// function testGetData() {
+//   //todo: 測試用,上線後刪除
+//   var res = testdata.Payload;
+//   datas.MoldStockID = parseInt(props.id.replace(/mold/g, ''), 10);
+//   datas.MoldMaxLimit = res.MoldMaxLimit;
+//   datas.MoldInjection = res.MoldInjection;
+//   datas.MoldMaxLifeCycle = res.MoldMaxLifeCycle;
+//   datas.MoldTotalInjection = res.MoldTotalInjection;
+//   datas.ModelID = res.ModelID;
+// }
 
-var isgreen = data.Payload.MoldStatus == 0 ? true : false;
-var isyellow = data.Payload.MoldStatus == 1 ? true : false;
-var isred = data.Payload.MoldStatus == 2 ? true : false;
+onMounted(() => {
+  testGetData();
+});
+
+var isgreen = datas.MoldStatus == 0 ? true : false;
+var isyellow = datas.MoldStatus == 1 ? true : false;
+var isred = datas.MoldStatus == 2 ? true : false;
 </script>
 
 <template>
   <div class="mold">
     <div class="card">
       <div class="cardtop">
-        <div>庫格{{ id }}</div>
+        <div>庫格{{ datas.MoldStockID }}</div>
         <img src="../assets/Mold_PIC.png" alt="" width="100" />
       </div>
       <div class="cardbody row">
@@ -87,21 +123,21 @@ var isred = data.Payload.MoldStatus == 2 ? true : false;
             <strong>
               單次保養上限:
               <span style="color: #fff100">
-                {{ data.Payload.MoldMaxLimit }}
+                {{ datas.MoldMaxLimit }}
               </span>
             </strong>
           </p>
           <p>
             <strong>
               累計模具射出:
-              <span> {{ data.Payload.MoldInjection }} </span>
+              <span> {{ datas.MoldInjection }} </span>
             </strong>
           </p>
           <p>
             <strong
               >大保養上限:
               <span style="color: var(--color-red)">{{
-                data.Payload.MoldMaxLifeCycle
+                datas.MoldMaxLifeCycle
               }}</span></strong
             >
           </p>
@@ -109,14 +145,14 @@ var isred = data.Payload.MoldStatus == 2 ? true : false;
             <strong
               >總射出數:
               <span style="color: #172a88">{{
-                data.Payload.MoldTotalInjection
+                datas.MoldTotalInjection
               }}</span></strong
             >
           </p>
         </div>
       </div>
     </div>
-    <div class="cardBottom">{{ data.Payload.ModelID }}</div>
+    <div class="cardBottom">{{ datas.ModelID }}</div>
   </div>
 </template>
 
