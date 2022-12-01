@@ -64,29 +64,30 @@ const datas = reactive({
   'MoldTotalInjection': 0,
   'ModelID': 2,
 });
-const url = 'http://192.168.1.101/api/Commold/GetByID';
+//const url = 'http://192.168.1.101/api/Commold/GetByID';
+const url = 'http://192.168.1.101:8087/api/Commold/GetByID';
 
 //正式用
-function getMoldData() {
-  axios
-    .post(url, {
-      Id: props.id,
-    })
-    .then((response) => {
-      console.log(response);
-      var res = response.Payload;
-      datas.MoldStockID = parseInt(props.id.replace(/mold/g, ''), 10);
-      datas.MoldMaxLimit = res.MoldMaxLimit;
-      datas.MoldInjection = res.MoldInjection;
-      datas.MoldMaxLifeCycle = res.MoldMaxLifeCycle;
-      datas.MoldTotalInjection = res.MoldTotalInjection;
-      datas.ModelID = res.ModelID;
-    })
-    .catch((error) => console.log(error));
-}
+// function getMoldData() {
+//   axios
+//     .post(url, {
+//       Id: props.id,
+//     })
+//     .then((response) => {
+//       console.log(response);
+//       var res = response.Payload;
+//       datas.MoldStockID = parseInt(props.id.replace(/mold/g, ''), 10);
+//       datas.MoldMaxLimit = res.MoldMaxLimit;
+//       datas.MoldInjection = res.MoldInjection;
+//       datas.MoldMaxLifeCycle = res.MoldMaxLifeCycle;
+//       datas.MoldTotalInjection = res.MoldTotalInjection;
+//       datas.ModelID = res.ModelID;
+//     })
+//     .catch((error) => console.log(error));
+// }
 
+//todo: 測試用,上線後刪除
 // function testGetData() {
-//   //todo: 測試用,上線後刪除
 //   var res = testdata.Payload;
 //   datas.MoldStockID = parseInt(props.id.replace(/mold/g, ''), 10);
 //   datas.MoldMaxLimit = res.MoldMaxLimit;
@@ -97,7 +98,10 @@ function getMoldData() {
 // }
 
 onMounted(() => {
-  testGetData();
+  //正式用
+  getMoldData();
+  //todo: 測試用
+  // testGetData();
 });
 
 var isgreen = datas.MoldStatus == 0 ? true : false;

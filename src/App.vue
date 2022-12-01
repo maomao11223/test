@@ -300,7 +300,8 @@ var moldBlockNo = [];
 //正式用
 var datas = [];
 
-const url = 'http://192.168.1.101/api/Commold/GetCommoldList';
+//const url = 'http://192.168.1.101/api/Commold/GetCommoldList';
+const url = 'http://192.168.1.101:8087/api/Commold/GetCommoldList';
 
 //更改所在區域
 function changeMoldBlock(addorminus) {
@@ -324,7 +325,7 @@ function changeMoldBlock(addorminus) {
 
   //todo: 測試用,上線後刪除
   //測試用:取得所在區域的模具架資料
-  // testGetData();
+  //testGetData();
 
   //console.log('length:' + moldBlockNo.length);
 }
@@ -349,7 +350,7 @@ function changeMoldBlock(addorminus) {
 
 //   //console.log(moldBlockNo);
 // }
-//testGetData();
+// testGetData();
 
 //正式用
 //取得所在區域的模具架資料
