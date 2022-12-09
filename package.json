@@ -19,5 +19,6 @@
     "eslint-plugin-vue": "^9.3.0",
     "prettier": "^2.7.1",
     "vite": "^3.1.8"
-  }
+  },
+  "mock": "json-server --watch ./mock/DB.json"
 }

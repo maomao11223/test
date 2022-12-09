@@ -1,0 +1,63 @@
+{
+  "data": {
+    "Payload": [
+      {
+        "ID": 17,
+        "MoldStockID": "mold01"
+      },
+      {
+        "ID": 16,
+        "MoldStockID": "mold03"
+      },
+      {
+        "ID": 3,
+        "MoldStockID": "mold02"
+      },
+      {
+        "ID": 5,
+        "MoldStockID": "mold15"
+      },
+      {
+        "ID": 8,
+        "MoldStockID": "mold10"
+      }
+    ]
+  },
+  "data2": {
+    "Payload": {
+      "ID": 16,
+      "ModelID": "94100002",
+      "Name": "P180108A-MA曲柄飾蓋 (長) 模具",
+      "Hold": 2,
+      "Tonnage": 1,
+      "CustName": null,
+      "VendorName": null,
+      "CustomerCode": null,
+      "VendorCode": null,
+      "PDF": null,
+      "CanUseCount": 0,
+      "SafetyStock": 1,
+      "MaintainWorkHour": 3,
+      "CycleTime": 5.8,
+      "IsEnabled": true,
+      "Remark": null,
+      "ProdId": "A-080-06",
+      "ProductName": null,
+      "MoldStockID": "G1X1Y1",
+      "MoldStockEnabled": true,
+      "MoldMaxLimit": 100,
+      "MoldInjection": 0,
+      "MoldStatus": 2,
+      "MoldStatusName": null,
+      "MoldMaxLifeCycle": 500,
+      "MoldTotalInjection": 100,
+      "MoldBlock": 1,
+      "MoldPicList": [],
+      "MachineList": [],
+      "CreateTime": "0001-01-01T00:00:00",
+      "CreateUser": null,
+      "UpdateTime": "2022-04-22T15:39:25",
+      "UpdateUser": null
+    }
+  }
+}

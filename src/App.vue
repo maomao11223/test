@@ -1,314 +1,54 @@
 <script setup>
 import axios from 'axios';
 import MoldStock from './components/moldstock.vue';
-import { ref } from 'vue';
+import { reactive, ref, onMounted } from 'vue';
 
-// var moldBlock = ref(1);
-// var moldBlockName = '內製區';
+var moldBlocks = reactive([
+  { moldBlock: 1, moldBlockName: '內製區' },
+  { moldBlock: 2, moldBlockName: '墊片區' },
+]);
 
-var moldBlocks = [
-  { index: 0, moldBlock: 1, moldBlockName: '內製區' },
-  { index: 1, moldBlock: 2, moldBlockName: '墊片區' },
-];
-//todo:測試用,上線後刪除
-// const testData = [
+var currentBlock = ref(1);
+
+var moldBlockNo = reactive([][4]);
+
+var datas = [{ ID: 1, MoldStockID: 'mold01' }];
+var MoldStockID = ref(12);
+var ID = ref(1);
+
+//測試用
+// var Payload = [
 //   {
-//     'ID': 17,
-//     'ModelID': '101953',
-//     'Name': '101953',
-//     'Hold': 4,
-//     'Tonnage': 0,
-//     'CustName': null,
-//     'VendorName': null,
-//     'CustomerCode': null,
-//     'VendorCode': null,
-//     'PDF': null,
-//     'CanUseCount': 0,
-//     'SafetyStock': 0,
-//     'MaintainWorkHour': 0.0,
-//     'CycleTime': 24.0,
-//     'IsEnabled': true,
-//     'Remark': null,
-//     'ProdId': '101953',
-//     'ProductName': '101953-TVA6開關螺帽',
-//     'MoldStockID': 'mold01',
-//     'MoldStockEnabled': true,
-//     'MoldMaxLimit': 5000,
-//     'MoldInjection': 4919,
-//     'MoldStatus': 1,
-//     'MoldStatusName': '良好',
-//     'MoldMaxLifeCycle': 500000,
-//     'MoldTotalInjection': 4919,
-//     'MoldBlock': 1,
-//     'MoldPicList': [],
-//     'MachineList': [],
-//     'CreateTime': '2022-04-01T11:49:08',
-//     'CreateUser': null,
-//     'UpdateTime': '2022-04-27T11:52:36',
-//     'UpdateUser': null,
+//     ID: 17,
+//     MoldStockID: 'mold01',
 //   },
 //   {
-//     'ID': 18,
-//     'ModelID': '101956',
-//     'Name': '101956',
-//     'Hold': 4,
-//     'Tonnage': 0,
-//     'CustName': null,
-//     'VendorName': null,
-//     'CustomerCode': null,
-//     'VendorCode': null,
-//     'PDF': null,
-//     'CanUseCount': 0,
-//     'SafetyStock': 0,
-//     'MaintainWorkHour': 0.0,
-//     'CycleTime': 22.0,
-//     'IsEnabled': true,
-//     'Remark': null,
-//     'ProdId': '101956',
-//     'ProductName': '101956-TVA6開關襯套',
-//     'MoldStockID': 'mold03',
-//     'MoldStockEnabled': true,
-//     'MoldMaxLimit': 5000,
-//     'MoldInjection': 0,
-//     'MoldStatus': 1,
-//     'MoldStatusName': '良好',
-//     'MoldMaxLifeCycle': 500000,
-//     'MoldTotalInjection': 0,
-//     'MoldBlock': 1,
-//     'MoldPicList': [],
-//     'MachineList': [],
-//     'CreateTime': '2022-04-01T11:49:08',
-//     'CreateUser': null,
-//     'UpdateTime': '2022-04-29T13:55:30',
-//     'UpdateUser': null,
+//     ID: 16,
+//     MoldStockID: 'mold03',
 //   },
 //   {
-//     'ID': 19,
-//     'ModelID': '101957',
-//     'Name': '101957',
-//     'Hold': 4,
-//     'Tonnage': 0,
-//     'CustName': null,
-//     'VendorName': null,
-//     'CustomerCode': null,
-//     'VendorCode': null,
-//     'PDF': null,
-//     'CanUseCount': 0,
-//     'SafetyStock': 0,
-//     'MaintainWorkHour': 0.0,
-//     'CycleTime': 22.0,
-//     'IsEnabled': true,
-//     'Remark': null,
-//     'ProdId': '101957',
-//     'ProductName': '101957-TVA6開關內座',
-//     'MoldStockID': 'mold04',
-//     'MoldStockEnabled': true,
-//     'MoldMaxLimit': 5000,
-//     'MoldInjection': 0,
-//     'MoldStatus': 1,
-//     'MoldStatusName': '良好',
-//     'MoldMaxLifeCycle': 500000,
-//     'MoldTotalInjection': 9820,
-//     'MoldBlock': 1,
-//     'MoldPicList': [],
-//     'MachineList': [],
-//     'CreateTime': '2022-04-01T11:49:08',
-//     'CreateUser': null,
-//     'UpdateTime': '2022-06-08T09:53:10',
-//     'UpdateUser': null,
+//     ID: 3,
+//     MoldStockID: 'mold02',
 //   },
 //   {
-//     'ID': 20,
-//     'ModelID': '180648-1',
-//     'Name': '180648(YH)',
-//     'Hold': 4,
-//     'Tonnage': 0,
-//     'CustName': null,
-//     'VendorName': null,
-//     'CustomerCode': null,
-//     'VendorCode': null,
-//     'PDF': null,
-//     'CanUseCount': 0,
-//     'SafetyStock': 0,
-//     'MaintainWorkHour': 0.0,
-//     'CycleTime': 0.0,
-//     'IsEnabled': true,
-//     'Remark': null,
-//     'ProdId': '180648',
-//     'ProductName': 'TVA15/17/19/21/22內閥(含油封)',
-//     'MoldStockID': 'mold02',
-//     'MoldStockEnabled': true,
-//     'MoldMaxLimit': 5000,
-//     'MoldInjection': 749,
-//     'MoldStatus': 1,
-//     'MoldStatusName': '良好',
-//     'MoldMaxLifeCycle': 500000,
-//     'MoldTotalInjection': 6048,
-//     'MoldBlock': 1,
-//     'MoldPicList': [],
-//     'MachineList': [],
-//     'CreateTime': '2022-04-01T11:49:08',
-//     'CreateUser': null,
-//     'UpdateTime': '2022-04-08T12:53:01',
-//     'UpdateUser': null,
+//     ID: 5,
+//     MoldStockID: 'mold15',
 //   },
 //   {
-//     'ID': 17,
-//     'ModelID': '101953',
-//     'Name': '101953',
-//     'Hold': 4,
-//     'Tonnage': 0,
-//     'CustName': null,
-//     'VendorName': null,
-//     'CustomerCode': null,
-//     'VendorCode': null,
-//     'PDF': null,
-//     'CanUseCount': 0,
-//     'SafetyStock': 0,
-//     'MaintainWorkHour': 0.0,
-//     'CycleTime': 24.0,
-//     'IsEnabled': true,
-//     'Remark': null,
-//     'ProdId': '101953',
-//     'ProductName': '101953-TVA6開關螺帽',
-//     'MoldStockID': 'mold12',
-//     'MoldStockEnabled': true,
-//     'MoldMaxLimit': 5000,
-//     'MoldInjection': 4919,
-//     'MoldStatus': 1,
-//     'MoldStatusName': '良好',
-//     'MoldMaxLifeCycle': 500000,
-//     'MoldTotalInjection': 4919,
-//     'MoldBlock': 1,
-//     'MoldPicList': [],
-//     'MachineList': [],
-//     'CreateTime': '2022-04-01T11:49:08',
-//     'CreateUser': null,
-//     'UpdateTime': '2022-04-27T11:52:36',
-//     'UpdateUser': null,
-//   },
-//   {
-//     'ID': 18,
-//     'ModelID': '101956',
-//     'Name': '101956',
-//     'Hold': 4,
-//     'Tonnage': 0,
-//     'CustName': null,
-//     'VendorName': null,
-//     'CustomerCode': null,
-//     'VendorCode': null,
-//     'PDF': null,
-//     'CanUseCount': 0,
-//     'SafetyStock': 0,
-//     'MaintainWorkHour': 0.0,
-//     'CycleTime': 22.0,
-//     'IsEnabled': true,
-//     'Remark': null,
-//     'ProdId': '101956',
-//     'ProductName': '101956-TVA6開關襯套',
-//     'MoldStockID': 'mold11',
-//     'MoldStockEnabled': true,
-//     'MoldMaxLimit': 5000,
-//     'MoldInjection': 0,
-//     'MoldStatus': 1,
-//     'MoldStatusName': '良好',
-//     'MoldMaxLifeCycle': 500000,
-//     'MoldTotalInjection': 0,
-//     'MoldBlock': 1,
-//     'MoldPicList': [],
-//     'MachineList': [],
-//     'CreateTime': '2022-04-01T11:49:08',
-//     'CreateUser': null,
-//     'UpdateTime': '2022-04-29T13:55:30',
-//     'UpdateUser': null,
-//   },
-//   {
-//     'ID': 19,
-//     'ModelID': '101957',
-//     'Name': '101957',
-//     'Hold': 4,
-//     'Tonnage': 0,
-//     'CustName': null,
-//     'VendorName': null,
-//     'CustomerCode': null,
-//     'VendorCode': null,
-//     'PDF': null,
-//     'CanUseCount': 0,
-//     'SafetyStock': 0,
-//     'MaintainWorkHour': 0.0,
-//     'CycleTime': 22.0,
-//     'IsEnabled': true,
-//     'Remark': null,
-//     'ProdId': '101957',
-//     'ProductName': '101957-TVA6開關內座',
-//     'MoldStockID': 'mold10',
-//     'MoldStockEnabled': true,
-//     'MoldMaxLimit': 5000,
-//     'MoldInjection': 0,
-//     'MoldStatus': 1,
-//     'MoldStatusName': '良好',
-//     'MoldMaxLifeCycle': 500000,
-//     'MoldTotalInjection': 9820,
-//     'MoldBlock': 1,
-//     'MoldPicList': [],
-//     'MachineList': [],
-//     'CreateTime': '2022-04-01T11:49:08',
-//     'CreateUser': null,
-//     'UpdateTime': '2022-06-08T09:53:10',
-//     'UpdateUser': null,
-//   },
-//   {
-//     'ID': 20,
-//     'ModelID': '180648-1',
-//     'Name': '180648(YH)',
-//     'Hold': 4,
-//     'Tonnage': 0,
-//     'CustName': null,
-//     'VendorName': null,
-//     'CustomerCode': null,
-//     'VendorCode': null,
-//     'PDF': null,
-//     'CanUseCount': 0,
-//     'SafetyStock': 0,
-//     'MaintainWorkHour': 0.0,
-//     'CycleTime': 0.0,
-//     'IsEnabled': true,
-//     'Remark': null,
-//     'ProdId': '180648',
-//     'ProductName': 'TVA15/17/19/21/22內閥(含油封)',
-//     'MoldStockID': 'mold09',
-//     'MoldStockEnabled': true,
-//     'MoldMaxLimit': 5000,
-//     'MoldInjection': 749,
-//     'MoldStatus': 1,
-//     'MoldStatusName': '良好',
-//     'MoldMaxLifeCycle': 500000,
-//     'MoldTotalInjection': 6048,
-//     'MoldBlock': 1,
-//     'MoldPicList': [],
-//     'MachineList': [],
-//     'CreateTime': '2022-04-01T11:49:08',
-//     'CreateUser': null,
-//     'UpdateTime': '2022-04-08T12:53:01',
-//     'UpdateUser': null,
+//     ID: 8,
+//     MoldStockID: 'mold10',
 //   },
 // ];
-//正式用
-var currentBlock = ref(1);
-//正式用
-var moldBlockNo = [];
-//正式用
-var datas = [];
 
-//const url = 'http://192.168.1.101/api/Commold/GetCommoldList';
-const url = 'http://192.168.1.101:8087/api/Commold/GetCommoldList';
+const url = 'http://localhost:3000/data';
 
 //更改所在區域
 function changeMoldBlock(addorminus) {
   if (addorminus == 'add') {
     currentBlock.value++;
+    console.log('currentBlock: ' + currentBlock.value);
     //如果目前頁面>區域數量,則目前頁面回到第一頁
-    if (currentBlock.value >= moldBlocks.length) {
+    if (currentBlock.value > moldBlocks.length - 1) {
       currentBlock.value = 0;
     }
   } else {
@@ -318,82 +58,57 @@ function changeMoldBlock(addorminus) {
     }
   }
   //正式用
-  while (moldBlockNo.length > 0) {
-    moldBlockNo.pop();
-  }
+  moldBlockNo = [];
   getMoldBlockData();
-
-  //todo: 測試用,上線後刪除
-  //測試用:取得所在區域的模具架資料
-  //testGetData();
-
-  //console.log('length:' + moldBlockNo.length);
 }
-
-//todo: 測試用,上線後刪除
-//測試用:取得所在區域的模具架資料
-// function testGetData() {
-//   // //拆出MoldStockID
-//   for (var i = 0; i < testData.length; i++) {
-//     testData[i].ID = parseInt(testData[i].MoldStockID.replace(/mold/g, ''), 10);
-//     //console.log(testData[i].MoldStockID);
-//   }
-
-//   // //測試排序  小到大
-//   testData.sort(function (a, b) {
-//     return a.ID - b.ID;
-//   });
-
-//   for (var i = 0, len = testData.length; i < len; i += 4) {
-//     moldBlockNo.push(testData.slice(i, i + 4));
-//   }
-
-//   //console.log(moldBlockNo);
-// }
-// testGetData();
 
 //正式用
 //取得所在區域的模具架資料
 function getMoldBlockData() {
   axios
     .post(url, {
-      'MoldBlock': currentBlock,
-      'ModelID': '',
-      'ModelName': '',
-      'MoldStockID': '',
-      'PageSize': 10,
-      'CurrentPage': 1,
+      MoldBlock: currentBlock.value + 1,
+      ModelID: '',
+      ModelName: '',
+      MoldStockID: '',
+      PageSize: 10,
+      CurrentPage: 1,
+      // Payload,
     })
     .then((response) => {
-      console.log(response);
-
-      datas = response.Payload;
-      //拆出MoldStockID
-      for (var i = 0; i < datas.length; i++) {
-        datas[i].ID = parseInt(datas[i].MoldStockID.replace(/mold/g, ''), 10);
-        //console.log(datas[i].MoldStockID);
-      }
+      datas = response.data.Payload;
 
       //測試排序  小到大
       datas.sort(function (a, b) {
-        return a.ID - b.ID;
+        return a.MoldStockID - b.MoldStockID;
       });
+      moldBlockNo = [];
 
-      for (var i = 0, len = datas.length; i < len; i += 4) {
-        moldBlockNo.push(datas.slice(i, i + 4));
+      var TmpArray = [];
+      for (var i = 0, len = datas.length; i < len; i++) {
+        console.log('datas.length: ' + datas.length);
+        TmpArray = [];
+        for (var j = 0; j < 4; j++) {
+          TmpArray.push(datas[4 * i + j]);
+        }
+        if (TmpArray[0] == null) break;
+        moldBlockNo.push(TmpArray);
       }
-
-      console.log(moldBlockNo);
+      console.log('inFunction:' + JSON.stringify(moldBlockNo[0]));
     })
+
     .catch((error) => console.log(error));
 }
-getMoldBlockData();
+
+onMounted(() => {
+  getMoldBlockData();
+});
 </script>
 
 <template>
   <div class="container">
     <header class="row">
-      <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="270" />
+      <img alt="Wisher logo" src="./assets/logo.svg" width="270" />
       <div class="row">
         <button @click="changeMoldBlock('minus')">
           <img src="./assets/leftArrow.svg" alt="" width="15" />
@@ -408,14 +123,14 @@ getMoldBlockData();
     </header>
 
     <main class="row justifycontent_center">
-      <div class="" v-for="items in moldBlockNo" :key="items.index">
+      <div v-for="i in moldBlockNo" :key="i.index">
         <div class="blockUnits row">
-          <MoldStock :id="items[0].MoldStockID" />
-          <MoldStock :id="items[1].MoldStockID" />
+          <MoldStock :id="i[0].ID" v-if="i[0] != null" />
+          <MoldStock :id="i[1].ID" v-if="i[1] != null" />
         </div>
         <div class="blockUnits row">
-          <MoldStock :id="items[2].MoldStockID" />
-          <MoldStock :id="items[3].MoldStockID" />
+          <MoldStock :id="i[2].ID" v-if="i[2] != null" />
+          <MoldStock :id="i[3].ID" v-if="i[3] != null" />
         </div>
       </div>
     </main>
@@ -429,13 +144,6 @@ header {
 
 header > div {
   margin: 0 auto;
-}
-.logo {
-  /* display: block; */
-  /* margin: 0 auto 2rem; */
-  /* position: absolute; */
-  /* top: 0px; */
-  /* left: 2rem; */
 }
 
 .container {

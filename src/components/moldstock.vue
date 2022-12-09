@@ -9,51 +9,45 @@ var props = defineProps({
   },
 });
 //todo:測試用,上線後刪除
-// const testdata = {
-//   StatusCode: 200,
-//   Message: null,
-//   Payload: {
-//     ID: 16,
-//     ModelID: '94100002',
-//     Name: 'P180108A-MA曲柄飾蓋 (長) 模具',
-//     Hold: 2,
-//     Tonnage: 1,
-//     CustName: null,
-//     VendorName: null,
-//     CustomerCode: null,
-//     VendorCode: null,
-//     PDF: null,
-//     CanUseCount: 0,
-//     SafetyStock: 1,
-//     MaintainWorkHour: 3,
-//     CycleTime: 5.8,
-//     IsEnabled: true,
-//     Remark: null,
-//     ProdId: 'A-080-06',
-//     ProductName: null,
-//     MoldStockID: 'G1X1Y1',
-//     MoldStockEnabled: true,
-//     MoldMaxLimit: 100,
-//     MoldInjection: 0,
-//     MoldStatus: 1,
-//     MoldStatusName: null,
-//     MoldMaxLifeCycle: 500,
-//     MoldTotalInjection: 100,
-//     MoldBlock: 1,
-//     MoldPicList: [],
-//     MachineList: [],
-//     CreateTime: '0001-01-01T00:00:00',
-//     CreateUser: null,
-//     UpdateTime: '2022-04-22T15:39:25',
-//     UpdateUser: null,
-//   },
-//   Pagination: {
-//     Total: null,
-//     PageSize: null,
-//     CurrentPage: null,
-//   },
-//   ResponseTime: '2022-11-07T16:19:53.7387511+08:00',
-// };
+const Payload = {
+  ID: 16,
+  ModelID: '94100002',
+  Name: 'P180108A-MA曲柄飾蓋 (長) 模具',
+  Hold: 2,
+  Tonnage: 1,
+  CustName: null,
+  VendorName: null,
+  CustomerCode: null,
+  VendorCode: null,
+  PDF: null,
+  CanUseCount: 0,
+  SafetyStock: 1,
+  MaintainWorkHour: 3,
+  CycleTime: 5.8,
+  IsEnabled: true,
+  Remark: null,
+  ProdId: 'A-080-06',
+  ProductName: null,
+  MoldStockID: 'G1X1Y1',
+  MoldStockEnabled: true,
+  MoldMaxLimit: 100,
+  MoldInjection: 0,
+  MoldStatus: 2,
+  MoldStatusName: null,
+  MoldMaxLifeCycle: 500,
+  MoldTotalInjection: 100,
+  MoldBlock: 1,
+  MoldPicList: [],
+  MachineList: [],
+  CreateTime: '0001-01-01T00:00:00',
+  CreateUser: null,
+  UpdateTime: '2022-04-22T15:39:25',
+  UpdateUser: null,
+};
+
+var isgreen = true;
+var isyellow = true;
+var isred = true;
 
 //正式用
 const datas = reactive({
@@ -63,28 +57,40 @@ const datas = reactive({
   'MoldMaxLifeCycle': 0,
   'MoldTotalInjection': 0,
   'ModelID': 2,
+  'MoldStatus': 0,
 });
-//const url = 'http://192.168.1.101/api/Commold/GetByID';
-const url = 'http://192.168.1.101:8087/api/Commold/GetByID';
+
+const url = 'http://localhost:3000/data2';
 
 //正式用
-// function getMoldData() {
-//   axios
-//     .post(url, {
-//       Id: props.id,
-//     })
-//     .then((response) => {
-//       console.log(response);
-//       var res = response.Payload;
-//       datas.MoldStockID = parseInt(props.id.replace(/mold/g, ''), 10);
-//       datas.MoldMaxLimit = res.MoldMaxLimit;
-//       datas.MoldInjection = res.MoldInjection;
-//       datas.MoldMaxLifeCycle = res.MoldMaxLifeCycle;
-//       datas.MoldTotalInjection = res.MoldTotalInjection;
-//       datas.ModelID = res.ModelID;
-//     })
-//     .catch((error) => console.log(error));
-// }
+function getMoldData() {
+  axios
+    .post(url, {
+      // Id: props.id,
+
+      Payload,
+    })
+    .then((response) => {
+      //console.log(response);
+      var res = response.data.Payload;
+      // datas.MoldStockID = parseInt(props.id.replace(/mold/g, ''), 10);
+      // var StringMoldStockID = props.id.replace(/mold/g, '');
+      // datas.MoldStockID = parseInt(StringMoldStockID, 10);
+      datas.MoldStockID = props.id;
+
+      datas.MoldMaxLimit = res.MoldMaxLimit;
+      datas.MoldInjection = res.MoldInjection;
+      datas.MoldMaxLifeCycle = res.MoldMaxLifeCycle;
+      datas.MoldTotalInjection = res.MoldTotalInjection;
+      datas.ModelID = res.ModelID;
+      datas.MoldStatus = res.MoldStatus;
+
+      isgreen = datas.MoldStatus == 0 ? true : false;
+      isyellow = datas.MoldStatus == 1 ? true : false;
+      isred = datas.MoldStatus == 2 ? true : false;
+    })
+    .catch((error) => console.log(error));
+}
 
 //todo: 測試用,上線後刪除
 // function testGetData() {
@@ -103,10 +109,6 @@ onMounted(() => {
   //todo: 測試用
   // testGetData();
 });
-
-var isgreen = datas.MoldStatus == 0 ? true : false;
-var isyellow = datas.MoldStatus == 1 ? true : false;
-var isred = datas.MoldStatus == 2 ? true : false;
 </script>
 
 <template>
